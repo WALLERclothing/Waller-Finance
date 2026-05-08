@@ -439,8 +439,41 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target === accountDetailsModalOverlay) Settings.closeAccountDetailsModal();
     });
 
+    // Auth Listeners
+    if (document.getElementById('show-register')) {
+        document.getElementById('show-register').onclick = (e) => {
+            e.preventDefault();
+            document.getElementById('login-form-container').classList.add('hidden');
+            document.getElementById('register-form-container').classList.remove('hidden');
+        };
+    }
+    if (document.getElementById('show-login')) {
+        document.getElementById('show-login').onclick = (e) => {
+            e.preventDefault();
+            document.getElementById('register-form-container').classList.add('hidden');
+            document.getElementById('login-form-container').classList.remove('hidden');
+        };
+    }
+
+    // Login Form Submit
+    document.getElementById('login-form').onsubmit = async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('login-email').value;
+        const pass = document.getElementById('login-password').value;
+        await Auth.signIn(email, pass);
+    };
+
+    // Register Form Submit
+    document.getElementById('register-form').onsubmit = async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('register-email').value;
+        const pass = document.getElementById('register-password').value;
+        await Auth.signUp(email, pass);
+    };
+
     // Inicializa a UI
     Store.init();
+    Auth.init(); // Inicializa Auth após Store
     UI.refreshAll();
 
     if (document.getElementById('btn-monthly-report')) {

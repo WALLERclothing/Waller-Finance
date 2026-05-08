@@ -83,9 +83,40 @@ const Store = {
             localStorage.setItem('waller_cards', JSON.stringify(this.cards));
             localStorage.setItem('waller_accounts', JSON.stringify(this.accounts));
             localStorage.setItem('waller_categories', JSON.stringify(this.categories));
+            
+            this.syncAllToSupabase();
         } catch (e) {
-            console.error("Erro ao salvar no LocalStorage (Limite excedido?):", e);
-            UI.showToast("Erro ao salvar dados! O armazenamento pode estar cheio.", "danger");
+            console.error("Erro ao salvar no LocalStorage:", e);
+            UI.showToast("Erro ao salvar dados!", "danger");
+        }
+    },
+
+    async syncAllToSupabase() {
+        if (!window.Auth || !Auth.user) return;
+        try {
+            const userId = Auth.user.id;
+            const prepare = (list) => list.map(item => ({ ...item, user_id: userId }));
+            
+            await supabase.from('accounts').upsert(prepare(this.accounts));
+            await supabase.from('cards').upsert(prepare(this.cards));
+            await supabase.from('transactions').upsert(prepare(this.transactions));
+        } catch (err) {
+            console.error("Erro Supabase Sync:", err);
+        }
+    },
+
+    async loadFromSupabase() {
+        if (!window.Auth || !Auth.user) return;
+        try {
+            const { data: accs } = await supabase.from('accounts').select('*');
+            if (accs) this.accounts = accs;
+            const { data: crds } = await supabase.from('cards').select('*');
+            if (crds) this.cards = crds;
+            const { data: txs } = await supabase.from('transactions').select('*');
+            if (txs) this.transactions = txs;
+            UI.refreshAll();
+        } catch (err) {
+            console.error("Erro Supabase Load:", err);
         }
     },
 

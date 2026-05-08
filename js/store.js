@@ -112,18 +112,46 @@ const Store = {
     },
 
     async loadFromSupabase() {
-        if (!window.Auth || !Auth.user) return;
+        if (!window.Auth || !Auth.user || !Auth.profile) return;
+        
         try {
-            const { data: accs } = await supabase.from('accounts').select('*');
-            if (accs) this.accounts = accs;
-            const { data: crds } = await supabase.from('cards').select('*');
-            if (crds) this.cards = crds;
-            const { data: txs } = await supabase.from('transactions').select('*');
-            if (txs) this.transactions = txs;
+            const groupId = Auth.profile.group_id;
+
+            // Carrega Contas do Grupo
+            const { data: accounts } = await supabase
+                .from('accounts')
+                .select('*')
+                .eq('group_id', groupId);
+            
+            // Carrega Cartões do Grupo
+            const { data: cards } = await supabase
+                .from('cards')
+                .select('*')
+                .eq('group_id', groupId);
+
+            // Carrega Transações do Grupo
+            const { data: transactions } = await supabase
+                .from('transactions')
+                .select('*')
+                .eq('group_id', groupId);
+
+            if (accounts) this.accounts = accounts;
+            if (cards) this.cards = cards;
+            if (transactions) this.transactions = transactions;
+
+            this.saveLocalOnly(); // Salva no LocalStorage para cache offline
             UI.refreshAll();
-        } catch (err) {
-            console.error("Erro Supabase Load:", err);
+        } catch (e) {
+            console.error("Erro ao carregar do Supabase:", e);
         }
+    },
+
+    // Salva apenas no LocalStorage sem disparar nova sincronização
+    saveLocalOnly() {
+        localStorage.setItem('waller_transactions', JSON.stringify(this.transactions));
+        localStorage.setItem('waller_cards', JSON.stringify(this.cards));
+        localStorage.setItem('waller_accounts', JSON.stringify(this.accounts));
+        localStorage.setItem('waller_categories', JSON.stringify(this.categories));
     },
 
     // Adiciona uma nova transação

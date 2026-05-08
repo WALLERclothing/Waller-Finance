@@ -12,6 +12,22 @@ const UI = {
         }
     },
 
+    refreshAll() {
+        this.updateDashboardSummary();
+        this.updateChart();
+        this.updateTransactionsList();
+        this.updateAnalytics();
+        this.updateCardsList();
+        this.updateAccountsList();
+        this.updateCategoriesList();
+        
+        if (window.Settings && Settings.updateCoupleUI) {
+            Settings.updateCoupleUI();
+        }
+
+        this.initIcons();
+    },
+
     confirm(message, onConfirm) {
         const modal = document.getElementById('confirm-modal');
         const msgEl = document.getElementById('confirm-message');

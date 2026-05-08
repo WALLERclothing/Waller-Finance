@@ -272,6 +272,42 @@ const Settings = {
         Store.save();
         UI.refreshAll();
         UI.showToast('Categoria removida!', 'danger');
+    },
+
+    // ---- COUPLE MANAGEMENT ----
+    updateCoupleUI() {
+        const display = document.getElementById('couple-code-display');
+        if (display && window.Auth && Auth.profile) {
+            display.value = Auth.profile.group_id;
+        }
+    },
+
+    copyCoupleCode() {
+        const code = document.getElementById('couple-code-display').value;
+        if (code && code !== 'Carregando...') {
+            navigator.clipboard.writeText(code);
+            UI.showToast('Código copiado para o parceiro!');
+        }
+    },
+
+    async joinCouple() {
+        const newGroupId = document.getElementById('join-couple-input').value.trim();
+        if (!newGroupId) return UI.showToast('Digite um código válido.', 'danger');
+        
+        if (!confirm('Ao se unir, seus dados serão mesclados com o parceiro. Deseja continuar?')) return;
+
+        try {
+            const { error } = await supabase
+                .from('profiles')
+                .update({ group_id: newGroupId })
+                .eq('id', Auth.user.id);
+
+            if (error) throw error;
+            UI.showToast('União realizada! Recarregando...', 'success');
+            setTimeout(() => window.location.reload(), 1500);
+        } catch (err) {
+            UI.showToast('Erro ao unir: ' + err.message, 'danger');
+        }
     }
 };
 

@@ -300,8 +300,44 @@
                             <h2>Categorias</h2>
                             <button class="btn-primary" onclick="Settings.openCategoryModal()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">+ Categoria</button>
                         </div>
-                        <div class="transactions-list" id="categories-list">
-                            <!-- Categories injected here -->
+
+                    <!-- Gestão em Casal -->
+                    <div class="card" style="grid-column: span 2;">
+                        <div class="card-header">
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                <div style="background: var(--accent-primary); width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white;">
+                                    <i data-lucide="users"></i>
+                                </div>
+                                <div>
+                                    <h2 style="margin: 0;">Finanças em Casal</h2>
+                                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">Compartilhe seus dados com seu parceiro(a)</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
+                            <!-- Seu Código -->
+                            <div style="background: rgba(255,255,255,0.02); padding: 1.5rem; border-radius: 16px; border: 1px dashed var(--glass-border);">
+                                <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">Seu Código de Casal</h3>
+                                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.5rem;">Mande este código para seu parceiro(a) se unir a você.</p>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <input type="text" id="couple-code-display" readonly value="Carregando..." style="flex: 1; background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: 10px; padding: 0.75rem; color: var(--accent-primary); font-family: monospace; font-weight: bold; text-align: center;">
+                                    <button class="btn-icon" onclick="Settings.copyCoupleCode()" style="background: var(--accent-primary); border-radius: 10px; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; color: white; border: none; cursor: pointer;">
+                                        <i data-lucide="copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Unir-se -->
+                            <div style="padding: 1.5rem;">
+                                <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">Unir-se a um Parceiro</h3>
+                                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.5rem;">Digite o código do seu parceiro(a) para compartilhar os dados.</p>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <input type="text" id="join-couple-input" placeholder="Cole o código aqui" style="flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 10px; padding: 0.75rem; color: white;">
+                                    <button onclick="Settings.joinCouple()" style="background: var(--bg-card-hover); border-radius: 10px; padding: 0 1.5rem; color: white; border: 1px solid var(--glass-border); cursor: pointer; font-weight: 600;">Unir</button>
+                                </div>
+                                <p style="font-size: 0.75rem; color: var(--danger); margin-top: 1rem;">⚠️ Atenção: Ao se unir, seus dados atuais serão mesclados com os do parceiro.</p>
+                            </div>
                         </div>
                     </div>
 

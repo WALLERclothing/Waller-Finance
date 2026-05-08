@@ -5,24 +5,51 @@
 
 const Auth = {
     user: null,
+    profile: null, // Armazena o group_id e outros dados do perfil
 
     async init() {
-        // Verifica se já existe um usuário logado
-        const { data: { session } } = await supabase.auth.getSession();
-        this.user = session ? session.user : null;
-
-        // Listener para mudanças de estado (Login/Logout)
-        supabase.auth.onAuthStateChange((_event, session) => {
-            this.user = session ? session.user : null;
-            this.updateUI();
+        // Monitora mudanças no estado de autenticação
+        supabase.auth.onAuthStateChange(async (event, session) => {
+            this.user = session?.user || null;
             if (this.user) {
-                Store.loadFromSupabase(); // Carrega dados da nuvem ao logar
+                await this.loadProfile();
+                await Store.loadFromSupabase();
             } else {
+                this.profile = null;
                 UI.refreshAll();
             }
+            this.updateUI();
         });
 
+        // Verifica estado inicial
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+            this.user = session.user;
+            await this.loadProfile();
+            await Store.loadFromSupabase();
+        }
         this.updateUI();
+    },
+
+    async loadProfile() {
+        if (!this.user) return;
+        const { data, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', this.user.id)
+            .single();
+        
+        if (!error && data) {
+            this.profile = data;
+        } else if (error && error.code === 'PGRST116') {
+            // Se perfil não existe, tenta criar um (fallback)
+            const { data: newProfile } = await supabase
+                .from('profiles')
+                .insert([{ id: this.user.id, email: this.user.email }])
+                .select()
+                .single();
+            if (newProfile) this.profile = newProfile;
+        }
     },
 
     async signUp(email, password) {

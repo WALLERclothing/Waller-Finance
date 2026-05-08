@@ -92,10 +92,16 @@ const Store = {
     },
 
     async syncAllToSupabase() {
-        if (!window.Auth || !Auth.user) return;
+        if (!window.Auth || !Auth.user || !Auth.profile) return;
         try {
             const userId = Auth.user.id;
-            const prepare = (list) => list.map(item => ({ ...item, user_id: userId }));
+            const groupId = Auth.profile.group_id;
+            
+            const prepare = (list) => list.map(item => ({ 
+                ...item, 
+                user_id: userId,
+                group_id: groupId 
+            }));
             
             await supabase.from('accounts').upsert(prepare(this.accounts));
             await supabase.from('cards').upsert(prepare(this.cards));

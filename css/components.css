@@ -1,0 +1,405 @@
+/* Buttons */
+.btn-primary {
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: var(--glow-purple);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.btn-primary:hover::after {
+    opacity: 1;
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 10px 25px rgba(124, 77, 255, 0.5);
+}
+
+/* Cards */
+.card {
+    background-color: var(--bg-card);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 1.5rem;
+    transition: var(--transition);
+}
+
+.card:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+    background-color: var(--bg-card-hover);
+}
+
+.summary-card .card-header {
+    display: flex;
+    justify-content: space-between;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+}
+
+.summary-card .card-value {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.summary-card.income .card-value { color: var(--success); }
+.summary-card.expense .card-value { color: var(--danger); }
+
+.card-trend {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.card-trend.up { color: var(--success); }
+.card-trend.down { color: var(--danger); }
+
+.card-footer {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.transactions-card {
+    grid-column: span 2;
+}
+
+.transactions-card .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.view-all {
+    color: var(--accent-secondary);
+    text-decoration: none;
+    font-size: 0.875rem;
+}
+
+/* Transactions List */
+.transactions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.transaction-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid transparent;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+    animation: slideIn 0.3s ease-out forwards;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.transaction-item.pending {
+    opacity: 0.6;
+}
+
+.transaction-item.pending .icon-box {
+    filter: grayscale(100%);
+}
+
+.transaction-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--glass-border);
+    opacity: 1;
+}
+
+.btn-status {
+    outline: none;
+    transition: transform 0.2s, color 0.2s;
+}
+
+.btn-status:hover {
+    transform: scale(1.1);
+}
+
+.btn-delete, .btn-edit {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger);
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: var(--transition);
+    margin-left: 10px;
+}
+
+.btn-edit {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-secondary);
+}
+
+.transaction-item:hover .btn-delete,
+.transaction-item:hover .btn-edit {
+    opacity: 1;
+}
+
+.btn-delete:hover {
+    background: var(--danger);
+    color: white;
+}
+
+.btn-edit:hover {
+    background: var(--accent-primary);
+    color: white;
+}
+
+.icon-box {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-box.income { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+.icon-box.expense { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+
+.transaction-info { flex: 1; }
+.transaction-name { display: block; font-weight: 500; margin-bottom: 0.25rem; }
+.transaction-category { font-size: 0.75rem; color: var(--text-secondary); }
+
+.transaction-amount { font-weight: 600; }
+.transaction-amount.income { color: var(--success); }
+.transaction-amount.expense { color: var(--danger); }
+
+/* Chart Container */
+.chart-card {
+    grid-column: span 1;
+}
+
+.chart-container {
+    height: 220px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+}
+
+/* Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay.active {
+    display: flex;
+    opacity: 1;
+}
+
+.modal {
+    background: var(--bg-sidebar);
+    width: 95%;
+    max-width: 500px;
+    border-radius: 24px;
+    padding: 2rem;
+    border: 1px solid var(--glass-border);
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+    max-height: 90vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.modal-overlay.active .modal {
+    transform: translateY(0);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding-bottom: 1rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-row {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.form-row > .form-group {
+    flex: 1;
+    min-width: 200px;
+}
+
+.form-row > .form-group.hidden {
+    display: none;
+}
+
+label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+input, select {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    color: white;
+    outline: none;
+    transition: var(--transition);
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    text-overflow: ellipsis;
+}
+
+/* Fix for native dropdown option colors */
+option {
+    background-color: var(--bg-sidebar);
+    color: white;
+}
+
+input:focus, select:focus {
+    border-color: var(--accent-primary);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+
+.btn-submit {
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    color: white;
+    border: none;
+    padding: 1rem;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 1rem;
+}
+
+/* Toast System */
+.toast-container {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    z-index: 2000;
+}
+
+.toast {
+    background: var(--bg-sidebar);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--card-shadow);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 250px;
+    animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    position: relative;
+    overflow: hidden;
+}
+
+.toast::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 4px;
+    background: var(--accent-primary);
+}
+
+.toast.success::before { background: var(--success); }
+.toast.danger::before { background: var(--danger); }
+
+@keyframes toastIn {
+    from { opacity: 0; transform: translateX(100%); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.toast.fade-out {
+    animation: toastOut 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes toastOut {
+    from { opacity: 1; transform: translateX(0); }
+    to { opacity: 0; transform: translateX(100%); }
+}
+
+.empty-state {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-secondary);
+}

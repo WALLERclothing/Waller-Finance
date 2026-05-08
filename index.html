@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Waller Finance | Gestão Inteligente</title>
+    <meta name="description" content="Gestão de finanças pessoais com design premium e intuitivo.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS Modules -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/mobile.css">
+
+    <!-- Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/lucide@0.344.0/dist/umd/lucide.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">W</div>
+                <span>Waller Finance</span>
+            </div>
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" id="nav-dashboard">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" id="nav-transactions">
+                    <i data-lucide="list"></i>
+                    <span>Transações</span>
+                </a>
+                <a href="#" class="nav-item" id="nav-cards">
+                    <i data-lucide="credit-card"></i>
+                    <span>Cartões</span>
+                </a>
+                <a href="#" class="nav-item" id="nav-analytics">
+                    <i data-lucide="pie-chart"></i>
+                    <span>Análises</span>
+                </a>
+                <a href="#" class="nav-item" id="nav-settings">
+                    <i data-lucide="settings"></i>
+                    <span>Configurações</span>
+                </a>
+            </nav>
+            <div class="user-profile">
+                <div class="avatar">RF</div>
+                <div class="user-info">
+                    <span class="user-name">Renato Fatico</span>
+                    <span class="user-plan">Plano Premium</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="content">
+            <header class="top-bar" style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="greeting">
+                    <h1>Olá, Renato</h1>
+                    <p>Aqui está o resumo das suas finanças.</p>
+                </div>
+                
+                <div class="month-selector" style="display: flex; align-items: center; gap: 1rem; background: var(--bg-card); padding: 0.5rem 1rem; border-radius: 100px; border: 1px solid var(--glass-border);">
+                    <button class="btn-icon" id="prev-month" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; display: flex; align-items: center;"><i data-lucide="chevron-left"></i></button>
+                    <span id="current-month-display" style="font-weight: 600; min-width: 120px; text-align: center;">Maio de 2026</span>
+                    <button class="btn-icon" id="next-month" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; display: flex; align-items: center;"><i data-lucide="chevron-right"></i></button>
+                    <div style="width: 1px; height: 20px; background: var(--glass-border); margin: 0 0.5rem;"></div>
+                    <button class="btn-icon" id="btn-monthly-report" title="Relatório Mensal" style="background: none; border: none; color: var(--accent-primary); cursor: pointer; display: flex; align-items: center;">
+                        <i data-lucide="file-text"></i>
+                    </button>
+                </div>
+
+                <div class="action-buttons" style="display: flex; gap: 0.75rem;">
+                    <button class="btn-primary" id="open-modal-income" style="background: var(--success);">
+                        <i data-lucide="plus-circle"></i>
+                        Receita
+                    </button>
+                    <button class="btn-primary" id="open-modal-expense" style="background: var(--danger);">
+                        <i data-lucide="minus-circle"></i>
+                        Despesa
+                    </button>
+                </div>
+            </header>
+
+            <!-- VIEW: DASHBOARD -->
+            <div id="view-dashboard" class="view active">
+                <div class="dashboard-grid">
+                    <!-- Summary Cards -->
+                    <div class="card summary-card balance">
+                        <div class="card-header">
+                            <span>Saldo Total</span>
+                            <i data-lucide="wallet"></i>
+                        </div>
+                        <div class="card-value" id="total-balance">R$ 0,00</div>
+                        <div class="card-trend up">
+                            <i data-lucide="trending-up"></i>
+                            <span>+2.4% este mês</span>
+                        </div>
+                    </div>
+
+                    <div class="card summary-card income">
+                        <div class="card-header">
+                            <span>Entradas</span>
+                            <i data-lucide="trending-up"></i>
+                        </div>
+                        <div class="card-value" id="total-income">R$ 0,00</div>
+                        <div class="card-footer">Total recebido</div>
+                    </div>
+
+                    <div class="card summary-card expense">
+                        <div class="card-header">
+                            <span>Saídas</span>
+                            <i data-lucide="trending-down"></i>
+                        </div>
+                        <div class="card-value" id="total-expense">R$ 0,00</div>
+                        <div class="card-footer">Total gasto</div>
+                    </div>
+
+                    <!-- Recent Transactions -->
+                    <div class="card transactions-card">
+                        <div class="card-header">
+                            <h2>Transações Recentes</h2>
+                            <a href="#" class="view-all" onclick="document.getElementById('nav-transactions').click()">Ver tudo</a>
+                        </div>
+                        <div class="transactions-list" id="transactions-list">
+                            <!-- Transactions injected by ui.js -->
+                        </div>
+                    </div>
+
+                    <!-- Chart Card -->
+                    <div class="card chart-card">
+                        <div class="card-header">
+                            <h2>Distribuição</h2>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="financeChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: TRANSACTIONS -->
+            <div id="view-transactions" class="view">
+                <div class="card transactions-card">
+                    <div class="card-header" style="display: flex; flex-direction: column; gap: 1rem; align-items: flex-start;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                            <h2>Todas as Transações</h2>
+                        </div>
+                        <div class="search-box" style="position: relative; width: 100%; max-width: 400px;">
+                            <i data-lucide="search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 18px; color: var(--text-secondary); pointer-events: none;"></i>
+                            <input type="text" id="search-input" placeholder="Buscar por descrição, categoria ou valor..." style="padding-left: 40px; width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 12px; height: 45px; color: white;">
+                        </div>
+                    </div>
+                    <div class="transactions-list" id="all-transactions-list">
+                        <!-- Transactions injected by ui.js -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: CARDS -->
+            <div id="view-cards" class="view">
+                <div class="card">
+                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                        <h2>Meus Cartões</h2>
+                        <button class="btn-primary" onclick="Cards.openModal()" style="padding: 0.5rem 1rem;">+ Novo Cartão</button>
+                    </div>
+                    <div class="transactions-list" id="cards-list">
+                        <!-- Cards injected here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: ANALYTICS -->
+            <div id="view-analytics" class="view">
+                <div class="dashboard-grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <!-- Gráfico de Rosca - Categorias -->
+                    <div class="card" style="grid-column: span 1; padding: 1.25rem;">
+                        <div class="card-header" style="margin-bottom: 1rem;">
+                            <h2 style="font-size: 1.1rem;">Gastos por Categoria</h2>
+                        </div>
+                        <div class="chart-container" style="height: 220px;">
+                            <canvas id="analytics-category-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Gráfico de Barras - Mensal -->
+                    <div class="card" style="grid-column: span 1; padding: 1.25rem;">
+                        <div class="card-header" style="margin-bottom: 1rem;">
+                            <h2 style="font-size: 1.1rem;">Entradas vs Saídas</h2>
+                        </div>
+                        <div class="chart-container" style="height: 220px;">
+                            <canvas id="analytics-monthly-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Gráfico de Linha - Tendência de Saldo -->
+                    <div class="card" style="grid-column: span 2; padding: 1.25rem;">
+                        <div class="card-header" style="margin-bottom: 1rem;">
+                            <h2 style="font-size: 1.1rem;">Evolução do Patrimônio (6 meses)</h2>
+                        </div>
+                        <div class="chart-container" style="height: 200px;">
+                            <canvas id="analytics-trend-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: SETTINGS -->
+            <div id="view-settings" class="view">
+                <div class="dashboard-grid" style="grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <!-- Contas Bancárias -->
+                    <div class="card" style="grid-column: span 1;">
+                        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <h2>Contas Bancárias</h2>
+                            <button class="btn-primary" onclick="Settings.openAccountModal()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">+ Nova Conta</button>
+                        </div>
+                        <div class="transactions-list" id="accounts-list">
+                            <!-- Accounts injected here -->
+                        </div>
+                    </div>
+
+                    <!-- Categorias -->
+                    <div class="card" style="grid-column: span 1;">
+                        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <h2>Categorias</h2>
+                            <button class="btn-primary" onclick="Settings.openCategoryModal()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">+ Categoria</button>
+                        </div>
+                        <div class="transactions-list" id="categories-list">
+                            <!-- Categories injected here -->
+                        </div>
+                    </div>
+
+                    <!-- Backup e Sincronização -->
+                    <div class="card" style="grid-column: span 2;">
+                        <div class="card-header" style="margin-bottom: 1rem;">
+                            <h2>Backup e Segurança</h2>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary);">Proteja seus dados contra limpeza de cache ou troca de navegador.</p>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <button class="btn-primary" onclick="Settings.exportData()" style="background: rgba(124, 77, 255, 0.1); color: var(--accent-primary); border: 1px solid var(--accent-primary); display: flex; align-items: center; justify-content: center; gap: 0.5rem; height: 50px;">
+                                <i data-lucide="download"></i>
+                                Exportar Backup (JSON)
+                            </button>
+                            <div style="position: relative;">
+                                <input type="file" id="import-file" onchange="Settings.importData(event)" style="display: none;" accept=".json">
+                                <button class="btn-primary" onclick="document.getElementById('import-file').click()" style="width: 100%; background: rgba(16, 185, 129, 0.1); color: var(--success); border: 1px solid var(--success); display: flex; align-items: center; justify-content: center; gap: 0.5rem; height: 50px;">
+                                    <i data-lucide="upload"></i>
+                                    Importar Backup (JSON)
+                                </button>
+                            </div>
+                        </div>
+                        <p style="margin-top: 1rem; font-size: 0.75rem; color: var(--danger); opacity: 0.8;">
+                            <i data-lucide="alert-triangle" style="width: 12px; vertical-align: middle;"></i>
+                            Atenção: Importar um backup substituirá todos os dados atuais.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Modal for New Transaction -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Nova Transação</h2>
+                <button class="close-modal" id="close-modal">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <form id="transaction-form">
+                <div class="form-group">
+                    <label for="description">Descrição</label>
+                    <input type="text" id="description" placeholder="Ex: iPhone 15" required>
+                </div>
+                
+                <div class="form-row" id="row-amount-type">
+                    <div class="form-group">
+                        <label for="amount">Valor Total (R$)</label>
+                        <input type="number" id="amount" step="0.01" placeholder="0.00" required>
+                    </div>
+                    <div class="form-group" id="group-type">
+                        <label for="type">Tipo</label>
+                        <select id="type">
+                            <option value="income">Entrada</option>
+                            <option value="expense" selected>Saída</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="category">Categoria</label>
+                        <select id="category">
+                            <!-- Injected by ui.js -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="date" id="label-date">Data (Vencimento)</label>
+                        <input type="date" id="date" required>
+                    </div>
+                </div>
+
+                <div class="form-group hidden" id="payment-date-group">
+                    <label for="payment-date" style="color: var(--success);">Data do Pagamento Realizado</label>
+                    <input type="date" id="payment-date">
+                </div>
+
+                <div class="form-group" id="group-payment-method">
+                    <label for="payment-method">Meio de Pagamento</label>
+                    <select id="payment-method">
+                        <option value="account">PIX / Dinheiro / Transferência</option>
+                        <option value="card">Cartão de Crédito</option>
+                    </select>
+                </div>
+
+                <div class="form-row" id="payment-details-row">
+                    <div class="form-group" id="group-account">
+                        <label for="transaction-account" id="label-account">Sair da Conta</label>
+                        <select id="transaction-account">
+                            <!-- Injected by ui.js -->
+                        </select>
+                    </div>
+                    <div class="form-group hidden" id="group-card">
+                        <label for="transaction-card">Qual Cartão?</label>
+                        <select id="transaction-card">
+                            <!-- Injected by ui.js -->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="recurrence">Modelo de Pagamento</label>
+                    <select id="recurrence">
+                        <option value="none">Única (Pagamento à vista)</option>
+                        <option value="installment">Parcelada (Divide o valor em X vezes)</option>
+                        <option value="recurring">Recorrente (Conta mensal fixa ou variável)</option>
+                    </select>
+                </div>
+
+                <div class="form-group hidden" id="installments-group">
+                    <label for="installments">Quantidade de Parcelas</label>
+                    <input type="number" id="installments" min="2" max="120" value="2">
+                </div>
+
+                <div class="form-group hidden" id="recurring-type-group">
+                    <label for="recurring-type">Tipo de Valor</label>
+                    <select id="recurring-type">
+                        <option value="fixed">Valor Fixo (Ex: Netflix R$ 50)</option>
+                        <option value="variable">Valor Variável (Informar o valor todo mês)</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-submit">Salvar Transação</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Nova Conta Bancária -->
+    <div class="modal-overlay" id="account-modal">
+        <div class="modal card-modal">
+            <div class="modal-header">
+                <h2>Adicionar Conta Bancária</h2>
+                <button class="btn-close" onclick="Settings.closeAccountModal()">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <form id="account-form">
+                <div class="form-group">
+                    <label for="account-name">Nome da Conta</label>
+                    <input type="text" id="account-name" placeholder="Ex: NuConta, Itaú, Carteira..." required>
+                </div>
+                <div class="form-group">
+                    <label for="account-balance">Saldo Inicial (R$)</label>
+                    <input type="number" id="account-balance" step="0.01" placeholder="0.00" value="0.00">
+                    <small style="color: var(--text-secondary); font-size: 0.75rem;">Este valor será somado ao total da conta.</small>
+                </div>
+                <button type="submit" class="btn-submit">Salvar Conta</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Nova Categoria -->
+    <div class="modal-overlay" id="category-modal">
+        <div class="modal card-modal">
+            <div class="modal-header">
+                <h2>Adicionar Categoria</h2>
+                <button class="btn-close" onclick="Settings.closeCategoryModal()">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <form id="category-form">
+                <div class="form-group">
+                    <label for="category-name">Nome da Categoria</label>
+                    <input type="text" id="category-name" placeholder="Ex: Assinaturas, Pets..." required>
+                </div>
+                <div class="form-group">
+                    <label for="category-type">Tipo de Categoria</label>
+                    <select id="category-type" required>
+                        <option value="expense">Despesa</option>
+                        <option value="income">Receita</option>
+                        <option value="both">Ambas (Ex: Outros)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="category-color">Cor de Destaque</label>
+                    <input type="color" id="category-color" value="#7c4dff" required style="height: 50px; padding: 0.25rem;">
+                </div>
+                <button type="submit" class="btn-submit">Salvar Categoria</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Novo Cartão -->
+    <div class="modal-overlay" id="card-modal">
+        <div class="modal card-modal">
+            <div class="modal-header">
+                <h2>Adicionar Cartão</h2>
+                <button class="btn-close" onclick="Cards.closeModal()">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <form id="card-form">
+                <div class="form-group">
+                    <label for="card-name">Nome do Cartão</label>
+                    <input type="text" id="card-name" placeholder="Ex: Nubank, Itaú..." required>
+                </div>
+                <div class="form-group">
+                    <label for="card-last4">Últimos 4 dígitos</label>
+                    <input type="text" id="card-last4" placeholder="Ex: 1234" maxlength="4" required>
+                </div>
+                <div class="form-group">
+                    <label for="card-limit">Limite Total (R$)</label>
+                    <input type="number" id="card-limit" step="0.01" placeholder="Ex: 5000.00" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="card-due">Dia de Vencimento</label>
+                        <input type="number" id="card-due" min="1" max="31" placeholder="Ex: 10" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="card-closing-days">Fechar X dias antes</label>
+                        <input type="number" id="card-closing-days" min="1" max="20" placeholder="Ex: 7" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit">Salvar Cartão</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Resumo da Fatura -->
+    <div class="modal-overlay" id="invoice-summary-modal">
+        <div class="modal card-modal" style="max-width: 800px; width: 90%;">
+            <div class="modal-header">
+                <h2 id="summary-card-name">Fatura do Cartão</h2>
+                <button class="btn-close" onclick="Cards.closeInvoiceSummaryModal()">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <span style="font-size: 0.9rem; color: var(--text-secondary);" id="summary-month-name">Fatura</span>
+                <div style="font-size: 2.5rem; font-weight: 700; color: var(--text-primary);" id="summary-total-amount">R$ 0,00</div>
+            </div>
+
+            <h3 style="font-size: 1.1rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--glass-border);">Lançamentos</h3>
+            <div id="summary-transactions-list" style="max-height: 50vh; overflow-y: auto; margin-bottom: 2rem; display: flex; flex-direction: column; gap: 0.5rem; padding-right: 0.5rem;">
+                <!-- Injected dynamically -->
+            </div>
+
+            <button class="btn-primary" id="btn-pay-from-summary" style="width: 100%; padding: 1rem; font-size: 1.1rem;">Pagar Fatura</button>
+        </div>
+    </div>
+    <!-- Modal Resumo da Conta -->
+    <div class="modal-overlay" id="account-details-modal">
+        <div class="modal card-modal" style="max-width: 500px;">
+            <div class="modal-header">
+                <div>
+                    <h2 id="acc-detail-name">Nome da Conta</h2>
+                    <span style="font-size: 0.85rem; color: var(--text-secondary);">Extrato e Resumo Geral</span>
+                </div>
+                <button class="btn-close" onclick="Settings.closeAccountDetailsModal()">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            
+            <div class="account-summary-cards" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                <div class="summary-item" style="grid-column: span 2; background: var(--accent-primary); color: white; padding: 1.5rem; border-radius: 20px; display: flex; flex-direction: column; gap: 0.5rem;">
+                    <span style="font-size: 0.9rem; opacity: 0.8;">Saldo Disponível</span>
+                    <h3 id="acc-detail-balance" style="font-size: 2rem; font-weight: 700;">R$ 0,00</h3>
+                </div>
+                <div class="summary-item" style="background: rgba(16, 185, 129, 0.1); padding: 1rem; border-radius: 16px; border: 1px solid rgba(16, 185, 129, 0.2);">
+                    <span style="font-size: 0.8rem; color: var(--success); display: block; margin-bottom: 0.25rem;">Total Recebido</span>
+                    <strong id="acc-detail-income" style="font-size: 1.1rem; color: var(--success);">R$ 0,00</strong>
+                </div>
+                <div class="summary-item" style="background: rgba(239, 68, 68, 0.1); padding: 1rem; border-radius: 16px; border: 1px solid rgba(239, 68, 68, 0.2);">
+                    <span style="font-size: 0.8rem; color: var(--danger); display: block; margin-bottom: 0.25rem;">Total Gasto</span>
+                    <strong id="acc-detail-expense" style="font-size: 1.1rem; color: var(--danger);">R$ 0,00</strong>
+                </div>
+            </div>
+
+            <div class="modal-section">
+                <h4 style="margin-bottom: 1rem; font-size: 0.9rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em;">Últimos Lançamentos</h4>
+                <div id="acc-detail-transactions" class="transactions-list" style="max-height: 300px; overflow-y: auto;">
+                    <!-- Injected dynamically -->
+                </div>
+            </div>
+
+            <!-- Ajuste Rápido de Saldo -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 1.5rem; padding: 1rem; background: rgba(255,255,255,0.03); border-radius: 16px; border: 1px solid var(--glass-border);">
+                <button onclick="Settings.quickAdjustBalance('add')" class="btn-primary" style="background: rgba(16, 185, 129, 0.1); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.2); font-size: 0.85rem; height: 45px;">
+                    <i data-lucide="plus-circle" style="width: 16px; margin-right: 5px;"></i> Adicionar
+                </button>
+                <button onclick="Settings.quickAdjustBalance('remove')" class="btn-primary" style="background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); font-size: 0.85rem; height: 45px;">
+                    <i data-lucide="minus-circle" style="width: 16px; margin-right: 5px;"></i> Remover
+                </button>
+                <p style="grid-column: span 2; font-size: 0.7rem; color: var(--text-secondary); text-align: center; margin-top: 5px;">Ajuste rápido sem registro no extrato.</p>
+            </div>
+
+            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                <button onclick="Settings.openEditAccountFromDetail()" class="btn-primary" style="flex: 1; background: rgba(255,255,255,0.05); color: var(--text-secondary); border: 1px solid var(--glass-border); font-size: 0.85rem;">Editar Nome/Saldo Inicial</button>
+                <button onclick="Settings.confirmDeleteAccountFromDetail()" class="btn-primary" style="background: rgba(239, 68, 68, 0.05); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.1); width: 45px; padding: 0;">
+                    <i data-lucide="trash-2" style="width: 18px; margin: 0 auto;"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Pagamento de Fatura -->
+    <div class="modal-overlay" id="invoice-modal">
+        <div class="modal card-modal">
+            <div class="modal-header">
+                <h2>Pagar Fatura</h2>
+                <button class="btn-close" onclick="Cards.closeInvoiceModal()">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <form id="invoice-form">
+                <input type="hidden" id="invoice-card-name">
+                <input type="hidden" id="invoice-month">
+                <input type="hidden" id="invoice-year">
+                
+                <div class="form-group">
+                    <label for="invoice-amount">Valor da Fatura (Pode ser ajustado)</label>
+                    <input type="number" id="invoice-amount" step="0.01" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="invoice-account">Pagar com qual Conta?</label>
+                    <select id="invoice-account" required>
+                        <!-- Injected dynamically -->
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="invoice-date">Data do Pagamento</label>
+                    <input type="date" id="invoice-date" required>
+                </div>
+
+                <button type="submit" class="btn-submit">Confirmar Pagamento</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Confirm Modal -->
+    <div class="modal-overlay" id="confirm-modal" style="z-index: 1100;">
+        <div class="modal" style="max-width: 400px; text-align: center;">
+            <div class="modal-header" style="justify-content: center; border-bottom: none; padding-bottom: 0;">
+                <i data-lucide="alert-triangle" style="width: 48px; height: 48px; color: var(--danger); margin-bottom: 1rem;"></i>
+            </div>
+            <h2 style="margin-bottom: 1rem;" id="confirm-title">Atenção</h2>
+            <p id="confirm-message" style="color: var(--text-secondary); margin-bottom: 2rem;">Tem certeza que deseja continuar?</p>
+            <div style="display: flex; gap: 1rem;">
+                <button id="confirm-cancel" class="btn-primary" style="flex: 1; justify-content: center; background: rgba(255,255,255,0.1); color: var(--text-primary); margin: 0; padding: 1rem;">Cancelar</button>
+                <button id="confirm-ok" class="btn-primary" style="flex: 1; justify-content: center; background: var(--danger); color: white; margin: 0; padding: 1rem; box-shadow: none;">Excluir</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="#" class="bottom-nav-item active" id="mobile-nav-dashboard">
+            <i data-lucide="layout-dashboard"></i>
+        </a>
+        <a href="#" class="bottom-nav-item" id="mobile-nav-transactions">
+            <i data-lucide="list"></i>
+        </a>
+        <button class="fab-btn" id="mobile-open-modal">
+            <i data-lucide="plus"></i>
+        </button>
+        <a href="#" class="bottom-nav-item" id="mobile-nav-cards">
+            <i data-lucide="credit-card"></i>
+        </a>
+        <a href="#" class="bottom-nav-item" id="mobile-nav-analytics">
+            <i data-lucide="pie-chart"></i>
+        </a>
+    </nav>
+
+    <!-- Modal Relatório Mensal -->
+    <div class="modal-overlay" id="report-modal">
+        <div class="modal report-modal" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2 id="report-title">Relatório Mensal</h2>
+                <button class="btn-close" onclick="Reports.closeReport()">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="report-content" style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem;">
+                <div class="report-main-stats" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="stat-box" style="background: rgba(255,255,255,0.03); padding: 1rem; border-radius: 12px; border: 1px solid var(--glass-border);">
+                        <span style="font-size: 0.75rem; color: var(--text-secondary); display: block; margin-bottom: 0.25rem;">Total Recebido</span>
+                        <strong id="report-income" style="color: var(--success); font-size: 1.1rem;">R$ 0,00</strong>
+                    </div>
+                    <div class="stat-box" style="background: rgba(255,255,255,0.03); padding: 1rem; border-radius: 12px; border: 1px solid var(--glass-border);">
+                        <span style="font-size: 0.75rem; color: var(--text-secondary); display: block; margin-bottom: 0.25rem;">Total Gasto</span>
+                        <strong id="report-expense" style="color: var(--danger); font-size: 1.1rem;">R$ 0,00</strong>
+                    </div>
+                </div>
+
+                <div class="report-savings-box" style="background: var(--accent-primary-gradient); padding: 1.5rem; border-radius: 16px; color: white; text-align: center;">
+                    <span style="font-size: 0.85rem; opacity: 0.9; display: block; margin-bottom: 0.25rem;">Saldo do Mês (Economia)</span>
+                    <strong id="report-savings" style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">R$ 0,00</strong>
+                    <div style="background: rgba(255,255,255,0.2); padding: 0.4rem 1rem; border-radius: 100px; display: inline-block; font-size: 0.85rem;">
+                        Taxa de Poupança: <span id="report-savings-rate">0%</span>
+                    </div>
+                </div>
+
+                <div class="report-section">
+                    <h3 style="font-size: 1rem; margin-bottom: 1rem; color: var(--text-primary);">Onde você mais gastou:</h3>
+                    <div id="report-top-categories" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                        <!-- Injected by reports.js -->
+                    </div>
+                </div>
+
+                <div id="report-insight" style="background: rgba(255,255,255,0.03); padding: 1rem; border-radius: 12px; font-size: 0.9rem; line-height: 1.5; border-left: 4px solid var(--accent-primary);">
+                    <!-- Insight message -->
+                </div>
+                
+                <button class="btn-primary" onclick="window.print()" style="width: 100%; margin-top: 0.5rem;">
+                    <i data-lucide="printer"></i>
+                    Imprimir Relatório
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/store.js"></script>
+    <script src="js/settings.js"></script>
+    <script src="js/cards.js"></script>
+    <script src="js/transactions.js"></script>
+    <script src="js/analytics.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/reports.js"></script>
+    <script src="js/navigation.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

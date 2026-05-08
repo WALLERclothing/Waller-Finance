@@ -1,0 +1,138 @@
+/* Mobile Optimizations - Instagram Style UX */
+@media screen and (max-width: 768px) {
+    .app-container {
+        flex-direction: column;
+    }
+
+    /* Ocultar barra lateral clássica no mobile */
+    .sidebar {
+        display: none !important;
+    }
+
+    /* Ajustar área principal para não ficar sob o menu inferior */
+    .content {
+        padding: 1.5rem 1.5rem 6rem 1.5rem; /* Extra padding at bottom */
+        width: 100vw;
+        height: 100vh;
+    }
+
+    /* Top Bar - Colocar um abaixo do outro e ocupar tela toda */
+    .top-bar {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 1.5rem;
+    }
+
+    .greeting h1 {
+        font-size: 1.5rem;
+    }
+
+    /* Seletor de mês ocupando largura total e centralizando */
+    .month-selector {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    /* Ocultar os botões de ação do Header no mobile (teremos um FAB no rodapé) */
+    .top-bar .action-buttons {
+        display: none !important;
+    }
+
+    /* Grid do Dashboard empilhado */
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .transactions-card, .chart-card {
+        grid-column: span 1;
+    }
+
+    /* Melhorar lista de transações para telas pequenas */
+    .transaction-item {
+        flex-wrap: wrap;
+        padding: 1rem;
+    }
+    
+    .transaction-info {
+        min-width: 50%;
+    }
+    
+    .transaction-amount {
+        width: 100%;
+        margin-top: 0.75rem;
+        justify-content: flex-end;
+    }
+
+    .icon-box {
+        width: 40px;
+        height: 40px;
+    }
+
+    /* Menu de Navegação Inferior (Bottom Nav - Estilo Instagram) */
+    .bottom-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 65px;
+        background: var(--bg-card);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-top: 1px solid var(--glass-border);
+        justify-content: space-around;
+        align-items: center;
+        z-index: 1000;
+        padding-bottom: env(safe-area-inset-bottom); /* Suporte para iPhone Home Indicator */
+    }
+
+    .bottom-nav-item {
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: var(--transition);
+        width: 50px;
+        height: 50px;
+        text-decoration: none;
+    }
+
+    .bottom-nav-item i {
+        width: 24px;
+        height: 24px;
+    }
+
+    .bottom-nav-item.active {
+        color: var(--text-primary);
+        transform: scale(1.1);
+    }
+
+    /* Floating Action Button (FAB) - Botão Mais Centralizado */
+    .fab-btn {
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        box-shadow: 0 4px 15px rgba(124, 77, 255, 0.4);
+        transform: translateY(-20px);
+        border: none;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+    
+    .fab-btn:active {
+        transform: translateY(-18px) scale(0.95);
+    }
+}
+
+/* Ocultar barra inferior no Desktop */
+@media screen and (min-width: 769px) {
+    .bottom-nav {
+        display: none !important;
+    }
+}

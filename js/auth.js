@@ -100,7 +100,16 @@ const Auth = {
             
             // Atualiza nome do usuário na sidebar
             const userNameEl = document.querySelector('.user-name');
-            if (userNameEl) userNameEl.innerText = this.user.email.split('@')[0];
+            const avatarEl = document.querySelector('.avatar');
+            
+            if (userNameEl) {
+                const name = this.user.email.split('@')[0];
+                userNameEl.innerText = name.charAt(0).toUpperCase() + name.slice(1);
+            }
+            
+            if (avatarEl) {
+                avatarEl.innerText = this.user.email.substring(0, 2).toUpperCase();
+            }
         } else {
             if (authView) authView.classList.remove('hidden');
             if (appContainer) appContainer.classList.add('hidden');

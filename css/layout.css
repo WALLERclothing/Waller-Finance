@@ -13,6 +13,101 @@
     flex-direction: column;
     padding: 2rem 1.5rem;
     transition: var(--transition);
+    position: relative; /* Necessário para o popover lateral */
+    overflow: visible; /* Garante que o balão não seja cortado */
+}
+
+/* User Menu & Popover Lateral */
+.user-menu-container {
+    position: relative;
+    margin-top: auto;
+    padding-top: 1rem;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    cursor: pointer;
+    padding: 0.75rem;
+    border-radius: 12px;
+    transition: var(--transition);
+    border-top: 1px solid var(--glass-border);
+}
+
+.user-profile:hover {
+    background: var(--bg-card-hover);
+}
+
+.user-dropdown {
+    position: absolute;
+    bottom: 20px;
+    left: calc(100% + 20px);
+    width: 220px;
+    background: #12141c; /* Cor sólida para evitar transparência excessiva */
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 0.5rem;
+    box-shadow: 10px 10px 40px rgba(0,0,0,0.8);
+    display: none;
+    flex-direction: column;
+    gap: 0.25rem;
+    z-index: 9999;
+    animation: slideRight 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.user-dropdown.active {
+    display: flex;
+}
+
+/* Seta do Balão */
+.user-dropdown::before {
+    content: '';
+    position: absolute;
+    left: -7px;
+    bottom: 25px;
+    width: 14px;
+    height: 14px;
+    background: #12141c;
+    border-left: 1px solid var(--glass-border);
+    border-bottom: 1px solid var(--glass-border);
+    transform: rotate(45deg);
+}
+
+@keyframes slideRight {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.85rem;
+    border-radius: 10px;
+    transition: var(--transition);
+}
+
+.dropdown-item:hover {
+    background: var(--bg-card-hover);
+    color: var(--text-primary);
+}
+
+.dropdown-item.logout {
+    color: var(--danger);
+}
+
+.dropdown-item.logout:hover {
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.dropdown-divider {
+    height: 1px;
+    background: var(--glass-border);
+    margin: 0.5rem 0;
 }
 
 .logo {

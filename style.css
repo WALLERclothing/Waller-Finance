@@ -112,14 +112,6 @@ body {
     border-left: 3px solid var(--accent-primary);
 }
 
-.user-profile {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding-top: 2rem;
-    border-top: 1px solid var(--glass-border);
-}
-
 .avatar {
     width: 40px;
     height: 40px;

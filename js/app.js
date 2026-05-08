@@ -439,6 +439,42 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target === accountDetailsModalOverlay) Settings.closeAccountDetailsModal();
     });
 
+    // Menu de Usuário
+    const userProfileTrigger = document.getElementById('user-profile-trigger');
+    const userDropdown = document.getElementById('user-dropdown');
+    const btnLogout = document.getElementById('btn-logout');
+
+    if (userProfileTrigger) {
+        userProfileTrigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            userDropdown.classList.toggle('active');
+        });
+    }
+
+    if (btnLogout) {
+        btnLogout.addEventListener('click', (e) => {
+            e.preventDefault();
+            Auth.signOut();
+        });
+    }
+
+    // Atalho para Configurações no Dropdown
+    const btnSettingsShortcut = document.getElementById('btn-settings-shortcut');
+    if (btnSettingsShortcut) {
+        btnSettingsShortcut.addEventListener('click', (e) => {
+            e.preventDefault();
+            Navigation.navigateTo('settings');
+            userDropdown.classList.remove('active');
+        });
+    }
+
+    // Fecha dropdown ao clicar fora
+    window.addEventListener('click', () => {
+        if (userDropdown && userDropdown.classList.contains('active')) {
+            userDropdown.classList.remove('active');
+        }
+    });
+
     // Auth Listeners
     if (document.getElementById('show-register')) {
         document.getElementById('show-register').onclick = (e) => {

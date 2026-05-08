@@ -26,23 +26,45 @@ const Auth = {
     },
 
     async signUp(email, password) {
-        const { data, error } = await supabase.auth.signUp({ email, password });
-        if (error) {
-            UI.showToast(error.message, 'danger');
+        const btn = document.querySelector('#register-form button');
+        const originalText = btn.innerText;
+        btn.innerText = 'Criando conta...';
+        btn.disabled = true;
+
+        try {
+            const { data, error } = await supabase.auth.signUp({ email, password });
+            if (error) throw error;
+            UI.showToast('Verifique seu e-mail para confirmar!');
+            return data.user;
+        } catch (err) {
+            alert('Erro no cadastro: ' + err.message);
+            UI.showToast(err.message, 'danger');
             return null;
+        } finally {
+            btn.innerText = originalText;
+            btn.disabled = false;
         }
-        UI.showToast('Verifique seu e-mail para confirmar o cadastro!');
-        return data.user;
     },
 
     async signIn(email, password) {
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) {
-            UI.showToast(error.message, 'danger');
+        const btn = document.querySelector('#login-form button');
+        const originalText = btn.innerText;
+        btn.innerText = 'Entrando...';
+        btn.disabled = true;
+
+        try {
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) throw error;
+            UI.showToast('Bem-vindo!');
+            return data.user;
+        } catch (err) {
+            alert('Erro no login: ' + err.message);
+            UI.showToast(err.message, 'danger');
             return null;
+        } finally {
+            btn.innerText = originalText;
+            btn.disabled = false;
         }
-        UI.showToast('Bem-vindo de volta!');
-        return data.user;
     },
 
     async signOut() {

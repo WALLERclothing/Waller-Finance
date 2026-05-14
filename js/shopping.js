@@ -182,9 +182,14 @@ const Shopping = {
             return;
         }
 
-        const total = checkedItems.reduce((sum, item) => sum + item.price, 0);
-        if (total <= 0) {
-            UI.showToast('O valor total deve ser maior que zero.', 'danger');
+        const calculatedTotal = checkedItems.reduce((sum, item) => sum + item.price, 0);
+        const manualTotalInput = document.getElementById('shopping-final-total');
+        const manualTotal = parseFloat(manualTotalInput ? manualTotalInput.value : 0) || 0;
+        
+        const finalTotal = manualTotal > 0 ? manualTotal : calculatedTotal;
+
+        if (finalTotal <= 0) {
+            UI.showToast('O valor total da compra deve ser maior que zero. Preencha o valor final ou os valores dos itens.', 'danger');
             return;
         }
 
@@ -198,7 +203,7 @@ const Shopping = {
 
         const transaction = {
             description: 'Lista de Compras (Mercado)',
-            amount: total,
+            amount: finalTotal,
             type: 'expense',
             category: categoryId,
             date: new Date().toISOString().split('T')[0],

@@ -121,10 +121,11 @@ const Auth = {
         const authView = document.getElementById('auth-view');
         const appContainer = document.querySelector('.app-container');
 
+        // BYPASS LOGIN: O sistema ficará sempre aberto (appContainer visível)
+        if (authView) authView.style.display = 'none';
+        if (appContainer) appContainer.classList.remove('hidden');
+
         if (this.user) {
-            if (authView) authView.classList.add('hidden');
-            if (appContainer) appContainer.classList.remove('hidden');
-            
             // Atualiza nome do usuário na sidebar
             const userNameEl = document.querySelector('.user-name');
             const avatarEl = document.querySelector('.avatar');
@@ -137,9 +138,6 @@ const Auth = {
             if (avatarEl) {
                 avatarEl.innerText = this.user.email.substring(0, 2).toUpperCase();
             }
-        } else {
-            if (authView) authView.classList.remove('hidden');
-            if (appContainer) appContainer.classList.add('hidden');
         }
     }
 };

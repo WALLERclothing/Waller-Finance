@@ -511,6 +511,7 @@ document.addEventListener('DOMContentLoaded', () => {
     Store.init();
     Auth.init(); // Inicializa Auth após Store
     UI.refreshAll();
+    if (window.Shopping) Shopping.init();
 
     if (document.getElementById('btn-monthly-report')) {
         document.getElementById('btn-monthly-report').addEventListener('click', () => {

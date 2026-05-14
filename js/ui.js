@@ -24,6 +24,10 @@ const UI = {
         if (window.Settings && Settings.updateCoupleUI) {
             Settings.updateCoupleUI();
         }
+        
+        if (window.Shopping) {
+            Shopping.renderList();
+        }
 
         this.initIcons();
     },

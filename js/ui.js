@@ -26,7 +26,7 @@ const UI = {
         }
         
         if (window.Shopping) {
-            Shopping.renderList();
+            Shopping.renderGrid();
         }
 
         this.initIcons();

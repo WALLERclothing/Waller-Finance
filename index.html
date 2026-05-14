@@ -376,74 +376,112 @@
 
             <!-- VIEW: SHOPPING LIST -->
             <div id="view-shopping" class="view">
-                <div class="dashboard-grid" style="grid-template-columns: 2fr 1fr; gap: 1.5rem;">
-                    <!-- Lista de Itens -->
-                    <div class="card" style="grid-column: span 1;">
-                        <div class="card-header" style="margin-bottom: 1.5rem;">
-                            <h2>Lista de Compras</h2>
-                            <p style="font-size: 0.85rem; color: var(--text-secondary);">Anote e sincronize o que precisa comprar.</p>
-                        </div>
-                        
-                        <!-- Form de Novo Item -->
-                        <form id="shopping-item-form" style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem;">
-                            <input type="text" id="shop-item-name" placeholder="Ex: Arroz 5kg" required style="flex: 2; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 10px; padding: 0.75rem; color: white;">
-                            <input type="number" id="shop-item-price" step="0.01" placeholder="R$ Est." style="flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 10px; padding: 0.75rem; color: white;">
-                            <button type="submit" class="btn-primary" style="padding: 0 1rem; border-radius: 10px;">
-                                <i data-lucide="plus"></i>
-                            </button>
-                        </form>
-
-                        <div class="transactions-list" id="shopping-list-items" style="max-height: 400px; overflow-y: auto;">
-                            <!-- Items injected here by ui.js -->
-                        </div>
+                <div class="card-header" style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h2>Listas de Compras</h2>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">Gerencie suas listas de mercado, feira e outros.</p>
                     </div>
+                    <button class="btn-primary" onclick="Shopping.openCreateModal()">
+                        <i data-lucide="plus"></i>
+                        Nova Lista
+                    </button>
+                </div>
 
-                    <!-- Checkout Box -->
-                    <div class="card" style="grid-column: span 1; height: fit-content; position: sticky; top: 1rem;">
-                        <div class="card-header" style="margin-bottom: 1rem;">
-                            <h2>Fechar Compra</h2>
-                        </div>
-                        
-                        <div style="background: rgba(255,255,255,0.03); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--glass-border); margin-bottom: 1.5rem;">
-                            <span style="font-size: 0.85rem; color: var(--text-secondary); display: block; margin-bottom: 0.5rem;">Total Calculado (Soma dos Itens)</span>
-                            <strong id="shopping-total" style="font-size: 2.2rem; color: var(--text-primary); display: block; margin-bottom: 1rem;">R$ 0,00</strong>
-
-                            <label style="font-size: 0.85rem; color: var(--text-secondary); display: block; margin-bottom: 0.5rem;">Valor Final da Compra</label>
-                            <div style="display: flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 8px; padding: 0.75rem;">
-                                <span style="color: var(--text-secondary); font-size: 1.1rem;">R$</span>
-                                <input type="number" step="0.01" id="shopping-final-total" placeholder="0.00" style="width: 100%; background: transparent; border: none; color: white; font-size: 1.2rem; outline: none;">
-                            </div>
-                            <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.5rem;">Se preenchido, este valor será usado no fechamento.</p>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Forma de Pagamento</label>
-                            <select id="shopping-payment-method">
-                                <option value="account">PIX / Dinheiro / Transferência</option>
-                                <option value="card">Cartão de Crédito</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group" id="shopping-account-group">
-                            <label>Sair da Conta</label>
-                            <select id="shopping-account">
-                                <!-- Injected -->
-                            </select>
-                        </div>
-                        
-                        <div class="form-group hidden" id="shopping-card-group">
-                            <label>Qual Cartão?</label>
-                            <select id="shopping-card">
-                                <!-- Injected -->
-                            </select>
-                        </div>
-
-                        <button id="btn-checkout-shopping" class="btn-primary" style="width: 100%; padding: 1rem; margin-top: 1rem; font-size: 1.1rem; justify-content: center;">
-                            Finalizar Compra
-                        </button>
-                    </div>
+                <div id="shopping-lists-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+                    <!-- Cards de listas injetados aqui -->
                 </div>
             </div>
+
+        </main>
+    </div>
+
+    <!-- Modal for Shopping List Details -->
+    <div class="modal-overlay" id="modal-shopping-list">
+        <div class="modal" style="max-width: 800px; width: 95%;">
+            <div class="modal-header">
+                <h2 id="shopping-list-modal-title">Detalhes da Lista</h2>
+                <button class="btn-icon" onclick="Shopping.closeListModal()">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            
+            <div id="shopping-modal-content" style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 2rem;">
+                <!-- Coluna Esquerda: Itens -->
+                <div>
+                    <form id="shopping-item-form" style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem;">
+                        <input type="text" id="shop-item-name" placeholder="Ex: Arroz 5kg" required style="flex: 2; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 10px; padding: 0.75rem; color: white;">
+                        <input type="number" id="shop-item-price" step="0.01" placeholder="R$ Est." style="flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 10px; padding: 0.75rem; color: white;">
+                        <button type="submit" class="btn-primary" style="padding: 0 1rem; border-radius: 10px;">
+                            <i data-lucide="plus"></i>
+                        </button>
+                    </form>
+
+                    <div id="shopping-list-items" style="max-height: 450px; overflow-y: auto;">
+                        <!-- Items injetados -->
+                    </div>
+                </div>
+
+                <!-- Coluna Direita: Checkout -->
+                <div style="background: rgba(255,255,255,0.02); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--glass-border);">
+                    <div style="margin-bottom: 1.5rem;">
+                        <span style="font-size: 0.85rem; color: var(--text-secondary); display: block; margin-bottom: 0.5rem;">Total Calculado</span>
+                        <strong id="shopping-total" style="font-size: 2.2rem; color: var(--text-primary); display: block; margin-bottom: 1rem;">R$ 0,00</strong>
+
+                        <label style="font-size: 0.85rem; color: var(--text-secondary); display: block; margin-bottom: 0.5rem;">Valor Final da Compra</label>
+                        <div style="display: flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 8px; padding: 0.75rem;">
+                            <span style="color: var(--text-secondary); font-size: 1.1rem;">R$</span>
+                            <input type="number" step="0.01" id="shopping-final-total" placeholder="0.00" style="width: 100%; background: transparent; border: none; color: white; font-size: 1.2rem; outline: none;">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Forma de Pagamento</label>
+                        <select id="shopping-payment-method">
+                            <option value="account">PIX / Dinheiro / Transferência</option>
+                            <option value="card">Cartão de Crédito</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" id="shopping-account-group">
+                        <label>Conta</label>
+                        <select id="shopping-account"></select>
+                    </div>
+                    
+                    <div class="form-group hidden" id="shopping-card-group">
+                        <label>Cartão</label>
+                        <select id="shopping-card"></select>
+                    </div>
+
+                    <button id="btn-checkout-shopping" class="btn-primary" style="width: 100%; padding: 1rem; margin-top: 1rem; font-size: 1.1rem; justify-content: center;">
+                        Finalizar e Lançar Gasto
+                    </button>
+                    
+                    <button class="btn-delete" id="btn-delete-list" style="width: 100%; margin-top: 1rem; background: none; border: 1px solid rgba(239, 68, 68, 0.2); color: var(--danger); font-size: 0.85rem; padding: 0.75rem;">
+                        Excluir Esta Lista
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Creating/Renaming List -->
+    <div class="modal-overlay" id="modal-list-name">
+        <div class="modal" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2 id="list-name-modal-title">Nova Lista</h2>
+                <button class="btn-icon" onclick="document.getElementById('modal-list-name').classList.remove('active')">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <form id="form-list-name">
+                <div class="form-group">
+                    <label>Nome da Lista</label>
+                    <input type="text" id="list-name-input" placeholder="Ex: Mercado do Mês" required style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 0.75rem; border-radius: 8px; color: white;">
+                </div>
+                <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; padding: 1rem;">Salvar</button>
+            </form>
+        </div>
+    </div>
 
         </main>
     </div>

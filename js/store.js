@@ -7,7 +7,7 @@ const Store = {
     transactions: [],
     cards: [],
     accounts: [],
-    shoppingItems: [],
+    shoppingLists: [],
     categories: [
         { id: '1', name: 'Alimentação', color: '#ff5252', icon: 'coffee', type: 'expense' },
         { id: '2', name: 'Moradia', color: '#3B82F6', icon: 'home', type: 'expense' },
@@ -36,8 +36,8 @@ const Store = {
             const storedCategories = localStorage.getItem('waller_categories');
             this.categories = storedCategories ? JSON.parse(storedCategories) : this.categories;
 
-            const storedShopping = localStorage.getItem('waller_shopping');
-            this.shoppingItems = storedShopping ? JSON.parse(storedShopping) : [];
+            const storedShopping = localStorage.getItem('waller_shopping_lists');
+            this.shoppingLists = storedShopping ? JSON.parse(storedShopping) : [];
 
             this.runMigrations();
         } catch (e) {
@@ -87,7 +87,7 @@ const Store = {
             localStorage.setItem('waller_cards', JSON.stringify(this.cards));
             localStorage.setItem('waller_accounts', JSON.stringify(this.accounts));
             localStorage.setItem('waller_categories', JSON.stringify(this.categories));
-            localStorage.setItem('waller_shopping', JSON.stringify(this.shoppingItems));
+            localStorage.setItem('waller_shopping_lists', JSON.stringify(this.shoppingLists));
             
             this.syncAllToSupabase();
         } catch (e) {
@@ -111,7 +111,7 @@ const Store = {
             await supabase.from('accounts').upsert(prepare(this.accounts));
             await supabase.from('cards').upsert(prepare(this.cards));
             await supabase.from('transactions').upsert(prepare(this.transactions));
-            await supabase.from('shopping_items').upsert(prepare(this.shoppingItems));
+            await supabase.from('shopping_lists').upsert(prepare(this.shoppingLists));
         } catch (err) {
             console.error("Erro Supabase Sync:", err);
         }
@@ -141,16 +141,16 @@ const Store = {
                 .select('*')
                 .eq('group_id', groupId);
 
-            // Carrega Itens de Compra do Grupo
-            const { data: shoppingItems } = await supabase
-                .from('shopping_items')
+            // Carrega Listas de Compras do Grupo
+            const { data: shoppingLists } = await supabase
+                .from('shopping_lists')
                 .select('*')
                 .eq('group_id', groupId);
 
             if (accounts) this.accounts = accounts;
             if (cards) this.cards = cards;
             if (transactions) this.transactions = transactions;
-            if (shoppingItems) this.shoppingItems = shoppingItems;
+            if (shoppingLists) this.shoppingLists = shoppingLists;
 
             this.saveLocalOnly(); // Salva no LocalStorage para cache offline
             UI.refreshAll();
@@ -165,7 +165,7 @@ const Store = {
         localStorage.setItem('waller_cards', JSON.stringify(this.cards));
         localStorage.setItem('waller_accounts', JSON.stringify(this.accounts));
         localStorage.setItem('waller_categories', JSON.stringify(this.categories));
-        localStorage.setItem('waller_shopping', JSON.stringify(this.shoppingItems));
+        localStorage.setItem('waller_shopping_lists', JSON.stringify(this.shoppingLists));
     },
 
     // Adiciona uma nova transação

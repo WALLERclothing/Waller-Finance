@@ -1,169 +1,258 @@
 /**
  * js/shopping.js
- * Gerencia a Lógica da Lista de Compras
+ * Gerencia múltiplas listas de compras colaborativas.
  */
 
 const Shopping = {
+    activeListId: null,
+
     init() {
-        this.setupForm();
-        this.setupCheckout();
-    },
-
-    setupForm() {
-        const form = document.getElementById('shopping-item-form');
-        if (!form) return;
-
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const nameInput = document.getElementById('shop-item-name');
-            const priceInput = document.getElementById('shop-item-price');
-
-            const name = nameInput.value.trim();
-            const price = parseFloat(priceInput.value) || 0;
-
-            if (name) {
-                this.addItem(name, price);
-                nameInput.value = '';
-                priceInput.value = '';
-                nameInput.focus();
-            }
-        });
-    },
-
-    setupCheckout() {
+        const itemForm = document.getElementById('shopping-item-form');
+        const listNameForm = document.getElementById('form-list-name');
         const paymentMethodSelect = document.getElementById('shopping-payment-method');
-        const accountGroup = document.getElementById('shopping-account-group');
-        const cardGroup = document.getElementById('shopping-card-group');
+        const checkoutBtn = document.getElementById('btn-checkout-shopping');
+        const deleteListBtn = document.getElementById('btn-delete-list');
+
+        if (itemForm) {
+            itemForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.addItem();
+            });
+        }
+
+        if (listNameForm) {
+            listNameForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.saveListName();
+            });
+        }
 
         if (paymentMethodSelect) {
-            paymentMethodSelect.addEventListener('change', (e) => {
-                if (e.target.value === 'card') {
-                    accountGroup.classList.add('hidden');
-                    cardGroup.classList.remove('hidden');
-                } else {
-                    accountGroup.classList.remove('hidden');
-                    cardGroup.classList.add('hidden');
+            paymentMethodSelect.addEventListener('change', () => this.updateCheckoutSelects());
+        }
+
+        if (checkoutBtn) {
+            checkoutBtn.addEventListener('click', () => this.checkout());
+        }
+
+        if (deleteListBtn) {
+            deleteListBtn.addEventListener('click', () => {
+                if (confirm('Tem certeza que deseja excluir esta lista permanentemente?')) {
+                    this.deleteList(this.activeListId);
                 }
             });
         }
 
-        const btnCheckout = document.getElementById('btn-checkout-shopping');
-        if (btnCheckout) {
-            btnCheckout.addEventListener('click', () => this.checkout());
-        }
+        this.renderGrid();
     },
 
-    addItem(name, price) {
-        const item = {
-            id: Utils.generateId(),
-            name,
-            price,
-            quantity: 1,
-            checked: true // Novo item já vem selecionado
-        };
-        Store.shoppingItems.push(item);
-        Store.save();
-        UI.refreshAll();
-    },
+    // --- GRID DE LISTAS ---
 
-    toggleItem(id) {
-        const item = Store.shoppingItems.find(i => i.id === id);
-        if (item) {
-            item.checked = !item.checked;
-            Store.save();
-            UI.refreshAll();
-        }
-    },
+    renderGrid() {
+        const grid = document.getElementById('shopping-lists-grid');
+        if (!grid) return;
 
-    updateItemPrice(id, newPrice) {
-        const item = Store.shoppingItems.find(i => i.id === id);
-        if (item) {
-            item.price = parseFloat(newPrice) || 0;
-            Store.save();
-            this.renderTotal(); // Atualiza só o total para não perder o foco
-        }
-    },
-
-    deleteItem(id) {
-        Store.shoppingItems = Store.shoppingItems.filter(i => i.id !== id);
-        Store.save();
-        UI.refreshAll();
-    },
-
-    renderList() {
-        const container = document.getElementById('shopping-list-items');
-        if (!container) return;
-
-        container.innerHTML = '';
-
-        if (Store.shoppingItems.length === 0) {
-            container.innerHTML = `
-                <div class="empty-state">
-                    <i data-lucide="shopping-bag" style="width: 48px; height: 48px; margin-bottom: 1rem; color: var(--glass-border);"></i>
-                    <p>Sua lista de compras está vazia.</p>
+        if (Store.shoppingLists.length === 0) {
+            grid.innerHTML = `
+                <div style="grid-column: 1/-1; text-align: center; padding: 4rem; background: rgba(255,255,255,0.02); border-radius: 20px; border: 1px dashed var(--glass-border);">
+                    <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;">🛒</div>
+                    <h3 style="color: var(--text-secondary);">Nenhuma lista criada</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">Clique em "Nova Lista" para começar.</p>
                 </div>
             `;
             return;
         }
 
-        Store.shoppingItems.forEach(item => {
-            const div = document.createElement('div');
-            div.className = 'transaction-item';
-            div.style.display = 'flex';
-            div.style.alignItems = 'center';
-            div.style.gap = '1rem';
-            div.style.padding = '0.75rem';
-            div.style.opacity = item.checked ? '1' : '0.6';
-            
-            div.innerHTML = `
-                <input type="checkbox" ${item.checked ? 'checked' : ''} 
-                    onclick="Shopping.toggleItem('${item.id}')" 
-                    style="width: 20px; height: 20px; cursor: pointer; accent-color: var(--accent-primary);">
-                
-                <div style="flex: 1;">
-                    <div style="font-weight: 600; text-decoration: ${item.checked ? 'none' : 'line-through'};">${item.name}</div>
-                </div>
-                
-                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    <span style="color: var(--text-secondary); font-size: 0.85rem;">R$</span>
-                    <input type="number" step="0.01" value="${item.price.toFixed(2)}" 
-                        onchange="Shopping.updateItemPrice('${item.id}', this.value)"
-                        style="width: 80px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 6px; padding: 0.4rem; color: white; text-align: right;">
-                </div>
+        grid.innerHTML = Store.shoppingLists.map(list => {
+            const checkedCount = list.items.filter(i => i.checked).length;
+            const totalItems = list.items.length;
+            const progress = totalItems > 0 ? (checkedCount / totalItems) * 100 : 0;
+            const totalEst = list.items.reduce((sum, i) => sum + (i.price || 0), 0);
 
-                <button class="btn-icon" onclick="Shopping.deleteItem('${item.id}')" style="color: var(--danger); opacity: 0.7;">
-                    <i data-lucide="trash-2" style="width: 18px;"></i>
-                </button>
+            return `
+                <div class="card" style="cursor: pointer; transition: transform 0.2s;" onclick="Shopping.openList('${list.id}')">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                        <h3 style="font-size: 1.2rem;">${list.name}</h3>
+                        <div style="background: rgba(124, 77, 255, 0.1); color: var(--accent-primary); padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
+                            ${checkedCount}/${totalItems} itens
+                        </div>
+                    </div>
+                    
+                    <div style="height: 6px; background: rgba(255,255,255,0.05); border-radius: 10px; margin-bottom: 1.5rem; overflow: hidden;">
+                        <div style="height: 100%; width: ${progress}%; background: var(--accent-primary); transition: width 0.3s;"></div>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; color: var(--text-secondary); font-size: 0.85rem;">
+                        <span>Soma Est.: <strong>${Utils.formatCurrency(totalEst)}</strong></span>
+                        <div style="display: flex; align-items: center; gap: 4px;">
+                            <i data-lucide="calendar" style="width: 14px;"></i>
+                            ${new Date(list.updatedAt || list.createdAt).toLocaleDateString()}
+                        </div>
+                    </div>
+                </div>
             `;
-            container.appendChild(div);
-        });
+        }).join('');
 
-        this.renderTotal();
+        if (window.lucide) lucide.createIcons();
+    },
+
+    // --- MODAL DE NOME ---
+
+    openCreateModal() {
+        document.getElementById('list-name-modal-title').innerText = 'Nova Lista';
+        document.getElementById('list-name-input').value = '';
+        document.getElementById('modal-list-name').classList.add('active');
+        document.getElementById('list-name-input').focus();
+    },
+
+    saveListName() {
+        const name = document.getElementById('list-name-input').value;
+        if (!name) return;
+
+        const newList = {
+            id: Utils.generateId(),
+            name: name,
+            items: [],
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        };
+
+        Store.shoppingLists.push(newList);
+        Store.save();
+        
+        document.getElementById('modal-list-name').classList.remove('active');
+        this.renderGrid();
+        this.openList(newList.id);
+    },
+
+    // --- MODAL DE DETALHES ---
+
+    openList(id) {
+        const list = Store.shoppingLists.find(l => l.id === id);
+        if (!list) return;
+
+        this.activeListId = id;
+        document.getElementById('shopping-list-modal-title').innerText = list.name;
+        document.getElementById('shopping-final-total').value = '';
+        
+        this.renderItems();
         this.updateCheckoutSelects();
+        
+        document.getElementById('modal-shopping-list').classList.add('active');
     },
 
-    renderTotal() {
-        const totalEl = document.getElementById('shopping-total');
-        if (!totalEl) return;
-
-        const total = Store.shoppingItems
-            .filter(i => i.checked)
-            .reduce((sum, item) => sum + item.price, 0);
-
-        totalEl.innerText = Utils.formatCurrency(total);
+    closeListModal() {
+        this.activeListId = null;
+        document.getElementById('modal-shopping-list').classList.remove('active');
+        this.renderGrid();
     },
 
-    updateCheckoutSelects() {
-        const accountSelect = document.getElementById('shopping-account');
-        const cardSelect = document.getElementById('shopping-card');
+    renderItems() {
+        const list = Store.shoppingLists.find(l => l.id === this.activeListId);
+        const container = document.getElementById('shopping-list-items');
+        if (!list || !container) return;
 
-        if (accountSelect) {
-            accountSelect.innerHTML = Store.accounts.map(acc => 
-                `<option value="${acc.name}">${acc.name} (${Utils.formatCurrency(Store.getAccountStats(acc.name).balance)})</option>`
-            ).join('');
+        if (list.items.length === 0) {
+            container.innerHTML = `<p style="text-align: center; padding: 2rem; color: var(--text-secondary); opacity: 0.6;">Sua lista está vazia.</p>`;
+            document.getElementById('shopping-total').innerText = Utils.formatCurrency(0);
+            return;
         }
 
-        if (cardSelect) {
+        container.innerHTML = list.items.map(item => `
+            <div class="transaction-item" style="padding: 0.75rem; background: ${item.checked ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.05)'}; border: 1px solid ${item.checked ? 'transparent' : 'var(--glass-border)'}; border-radius: 12px; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 1rem; opacity: ${item.checked ? 0.6 : 1};">
+                <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="Shopping.toggleItem('${item.id}')" style="width: 20px; height: 20px; cursor: pointer;">
+                <div style="flex: 1;">
+                    <span style="${item.checked ? 'text-decoration: line-through;' : ''}">${item.name}</span>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-weight: 600; font-size: 0.9rem;">${Utils.formatCurrency(item.price || 0)}</div>
+                </div>
+                <button class="btn-icon" onclick="Shopping.deleteItem('${item.id}')" style="color: var(--danger); opacity: 0.5;">
+                    <i data-lucide="trash-2"></i>
+                </button>
+            </div>
+        `).join('');
+
+        const total = list.items.filter(i => i.checked).reduce((sum, i) => sum + (i.price || 0), 0);
+        document.getElementById('shopping-total').innerText = Utils.formatCurrency(total);
+        
+        if (window.lucide) lucide.createIcons();
+    },
+
+    addItem() {
+        const nameInput = document.getElementById('shop-item-name');
+        const priceInput = document.getElementById('shop-item-price');
+        
+        const name = nameInput.value;
+        const price = parseFloat(priceInput.value) || 0;
+
+        if (!name) return;
+
+        const list = Store.shoppingLists.find(l => l.id === this.activeListId);
+        if (list) {
+            list.items.push({
+                id: Utils.generateId(),
+                name,
+                price,
+                checked: false
+            });
+            list.updatedAt = new Date().toISOString();
+            Store.save();
+            
+            nameInput.value = '';
+            priceInput.value = '';
+            nameInput.focus();
+            this.renderItems();
+        }
+    },
+
+    toggleItem(itemId) {
+        const list = Store.shoppingLists.find(l => l.id === this.activeListId);
+        if (list) {
+            const item = list.items.find(i => i.id === itemId);
+            if (item) {
+                item.checked = !item.checked;
+                list.updatedAt = new Date().toISOString();
+                Store.save();
+                this.renderItems();
+            }
+        }
+    },
+
+    deleteItem(itemId) {
+        const list = Store.shoppingLists.find(l => l.id === this.activeListId);
+        if (list) {
+            list.items = list.items.filter(i => i.id !== itemId);
+            list.updatedAt = new Date().toISOString();
+            Store.save();
+            this.renderItems();
+        }
+    },
+
+    deleteList(id) {
+        Store.shoppingLists = Store.shoppingLists.filter(l => l.id !== id);
+        Store.save();
+        this.closeListModal();
+    },
+
+    // --- CHECKOUT ---
+
+    updateCheckoutSelects() {
+        const method = document.getElementById('shopping-payment-method').value;
+        const accountGroup = document.getElementById('shopping-account-group');
+        const cardGroup = document.getElementById('shopping-card-group');
+        
+        if (method === 'account') {
+            accountGroup.classList.remove('hidden');
+            cardGroup.classList.add('hidden');
+            
+            const accSelect = document.getElementById('shopping-account');
+            accSelect.innerHTML = Store.accounts.map(acc => `<option value="${acc.name}">${acc.name}</option>`).join('');
+        } else {
+            accountGroup.classList.add('hidden');
+            cardGroup.classList.remove('hidden');
+            
+            const cardSelect = document.getElementById('shopping-card');
             cardSelect.innerHTML = Store.cards.map(card => {
                 const cardName = `${card.name} (Final ${card.last4})`;
                 const used = Store.transactions
@@ -176,33 +265,34 @@ const Shopping = {
     },
 
     checkout() {
-        const checkedItems = Store.shoppingItems.filter(i => i.checked);
+        const list = Store.shoppingLists.find(l => l.id === this.activeListId);
+        if (!list) return;
+
+        const checkedItems = list.items.filter(i => i.checked);
         if (checkedItems.length === 0) {
-            UI.showToast('Selecione pelo menos um item para comprar.', 'danger');
+            UI.showToast('Selecione pelo menos um item da lista.', 'danger');
             return;
         }
 
-        const calculatedTotal = checkedItems.reduce((sum, item) => sum + item.price, 0);
+        const calculatedTotal = checkedItems.reduce((sum, item) => sum + (item.price || 0), 0);
         const manualTotalInput = document.getElementById('shopping-final-total');
         const manualTotal = parseFloat(manualTotalInput ? manualTotalInput.value : 0) || 0;
         
         const finalTotal = manualTotal > 0 ? manualTotal : calculatedTotal;
 
         if (finalTotal <= 0) {
-            UI.showToast('O valor total da compra deve ser maior que zero. Preencha o valor final ou os valores dos itens.', 'danger');
+            UI.showToast('Preencha o valor final ou o preço dos itens.', 'danger');
             return;
         }
 
         const paymentMethod = document.getElementById('shopping-payment-method').value;
         const accountName = document.getElementById('shopping-account').value;
         const cardId = document.getElementById('shopping-card').value;
-
-        // Achar a categoria "Compras" ou criar uma fallback
-        let categoryId = Store.categories.find(c => c.name.toLowerCase().includes('compra') || c.name.toLowerCase().includes('mercado'))?.id;
-        if (!categoryId) categoryId = Store.categories[0].id; // Fallback
+        
+        const categoryId = '7'; // Compras
 
         const transaction = {
-            description: 'Lista de Compras (Mercado)',
+            description: `Compra: ${list.name}`,
             amount: finalTotal,
             type: 'expense',
             category: categoryId,
@@ -214,19 +304,20 @@ const Shopping = {
             recurrence: 'none'
         };
 
-        // Adiciona a transação
         Store.addTransaction(transaction);
-
+        
         // Remove os itens comprados da lista
-        Store.shoppingItems = Store.shoppingItems.filter(i => !i.checked);
+        list.items = list.items.filter(i => !i.checked);
+        list.updatedAt = new Date().toISOString();
         Store.save();
 
-        UI.showToast('Compra finalizada com sucesso!', 'success');
-        UI.refreshAll();
-        
-        // Redireciona para o Dashboard
-        document.getElementById('nav-dashboard').click();
+        UI.showToast('Gasto lançado com sucesso!');
+        this.renderItems();
+        if (list.items.length === 0) {
+            this.deleteList(list.id);
+        }
     }
 };
 
 window.Shopping = Shopping;
+window.addEventListener('DOMContentLoaded', () => Shopping.init());
